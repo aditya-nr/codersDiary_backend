@@ -1,5 +1,4 @@
-const { Schema, default: mongoose, Schema } = require("mongoose");
-
+import mongoose, { Schema } from "mongoose";
 
 const sessionSchema = new Schema({
     owner: { type: Schema.Types.ObjectId, ref: "User" }

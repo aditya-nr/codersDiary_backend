@@ -1,9 +1,12 @@
-import { DSA, OTHERS, PROJECT, QUESTION, THEORY, TODO, WORK } from "../constant";
+import { DSA, OTHERS, PROJECT, QUESTION, THEORY, TODO, WORK } from "../constant.js";
 
-const { Schema, default: mongoose } = require("mongoose");
-
+import mongoose, { Schema } from "mongoose";
 
 const taskSchema = new Schema({
+    owner: {
+        type: Schema.Types.ObjectId, ref: "User",
+        required: [true, "owner is required"]
+    },
     target: {
         type: String,
         enum: {
@@ -34,8 +37,11 @@ const taskSchema = new Schema({
         type: String,
         required: [true, "task can't be empty"]
     },
-    desc: String,
-    images: [{ type: String }]
+    desc: {
+        type: String,
+        default: ""
+    },
+    images: [{ type: String, default: [] }]
 }, { timestamps: true });
 
 export default mongoose.model("Task", taskSchema);

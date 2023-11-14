@@ -1,21 +1,44 @@
-const { Schema, default: mongoose } = require("mongoose");
+import mongoose, { Schema } from "mongoose";
 
+const fullNameRegex = /^[a-zA-Z ]{3,20}$/
+const emailRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/
 
 const profileSchema = new Schema({
-    owner: { type: Schema.Types.ObjectIdj, ref: 'User' },
+    owner: {
+        type: Schema.Types.ObjectId, ref: 'User',
+        required: [true, "owner is missing"]
+    },
     fullName: {
         type: String,
         trim: true,
+        required: [true, "fullname is required"],
         minLength: [3, "allowed 3-20 characters"],
-        maxLength: [20, "allowed 3-20 characters"]
+        maxLength: [20, "allowed 3-20 characters"],
+        validate: {
+            validator: function (nm) {
+                return fullNameRegex.test(nm);
+            },
+            message: props => `Can contain 'a-z' 'A-Z'`
+        },
     },
-    avatar: String,
+    email: {
+        type: String,
+        trim: true,
+        validate: {
+            validator: function (mail) {
+                return emailRegex.test(mail);
+            },
+            message: props => `Invalid email`
+        }
+    },
+    avatar: { type: String, default: null },
     startDate: {
         type: Date,
-        required: [true, "start date is missing"]
+        required: [true, "startDate is missing"]
     },
     months: {
         type: Number,
+        required: [true, "months is required"],
         validate: {
             validator: function (m) {
                 if (1 <= m && m <= 12)
@@ -27,6 +50,7 @@ const profileSchema = new Schema({
     },
     weekDays: {
         type: Number,
+        required: [true, "weekDays is required"],
         validate: {
             validator: function (w) {
                 if (1 <= w && w <= 7)
@@ -44,9 +68,9 @@ const profileSchema = new Schema({
         type: Number,
         default: 0
     },
-    days: [{ type: Schema.Types.ObjectId, ref: "Day" }],
-    todos: [{ type: Schema.Types.ObjectId, ref: "Task" }],
-    projects: [{ type: Schema.Types.ObjectId, ref: "Project" }],
+    days: [{ type: Schema.Types.ObjectId, ref: "Day", default: [] }],
+    todos: [{ type: Schema.Types.ObjectId, ref: "Task", default: [] }],
+    projects: [{ type: Schema.Types.ObjectId, ref: "Project", default: [] }],
 });
 
 export default mongoose.model("Profile", profileSchema);

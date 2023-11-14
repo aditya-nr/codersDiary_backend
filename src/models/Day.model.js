@@ -1,17 +1,18 @@
-const { Schema, default: mongoose } = require("mongoose");
-
+import mongoose, { Schema } from "mongoose";
 
 const daySchema = new Schema({
     dsa: [
         {
             type: Schema.Types.ObjectId,
-            ref: "Task"
+            ref: "Task",
+            default: []
         }
     ],
     work: [
         {
             type: Schema.Types.ObjectId,
-            ref: "Task"
+            ref: "Task",
+            default: []
         }
     ]
 });

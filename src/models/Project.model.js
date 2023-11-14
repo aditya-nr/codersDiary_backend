@@ -1,5 +1,4 @@
-const { Schema, default: mongoose } = require("mongoose");
-
+import mongoose, { Schema } from "mongoose";
 
 const projectSchema = new Schema({
     repo: String,

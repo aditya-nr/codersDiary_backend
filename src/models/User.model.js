@@ -1,21 +1,22 @@
-import PasswordService from "../utils/PasswordService";
+import PasswordService from "../utils/PasswordService.js";
 
-const { Schema, default: mongoose } = require("mongoose");
+import mongoose, { Schema } from "mongoose";
 
-const userNameRegEx = /[a-zA-Z][a-zA-Z0-9-_]{3,30}/gi;
-const passwordRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm;
+const userNameRegEx = /^[a-zA-Z][a-zA-Z0-9\.\-]{1,8}[a-zA-Z0-9]$/;
+const passwordRegEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,30}$/;
 
 const userSchema = new Schema({
     username: {
         type: String,
+        index: true,
         required: [true, "username is required"],
         minLength: [3, "length can't be less than 3"],
-        maxLength: [10, "length can't be more than 10"],
+        maxLength: [30, "length can't be more than 30"],
         validate: {
             validator: function (val) {
                 return userNameRegEx.test(val);
             },
-            message: props => `Must start with an alphabetic character. Can contain the following characters: 'a-z' 'A-Z' '0-9' '-' '_'`
+            message: props => `Must starts with alphabet. Can contain alphabet number '.' '-'. Must ends with alphabet or number.`
         }
     },
     password: {
@@ -29,6 +30,10 @@ const userSchema = new Schema({
         },
     },
     activated: {
+        type: Boolean,
+        default: false
+    },
+    validated: {
         type: Boolean,
         default: false
     }

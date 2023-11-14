@@ -15,7 +15,7 @@ class PasswordService {
             let same = await bcrypt.compare(password, hash);
             return same;//bool
         } catch (error) {
-
+            throw (err);
         }
     }
 }
