@@ -21,7 +21,7 @@ class CustomError extends Error {
     }
 
     static passwordNotMatched() {
-        return new CustomError(UNAUTHORIZED, 'WRONG_CREDENTIAL', "password not matched");
+        return new CustomError(UNAUTHORIZED, 'WRONG_CREDENTIAL', "username or password not matched");
     }
 
     static createError(statusCode, type, message) {

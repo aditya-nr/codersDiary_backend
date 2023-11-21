@@ -12,13 +12,13 @@ router.post('/activate', isAuth, UserController.activate);
 router.get('/logout', isAuth, UserController.logout);
 
 // protected rotes
-router.get('/profile', isAuth, UserController.profile);
-router.get('/day', isAuth, UserController.day);
+router.post('/profile', isAuth, UserController.profile);
+router.post('/day', isAuth, UserController.day);
 
 // Task
 router.post('/task', isAuth, TaskController.create);
 router.put('/task', isAuth, TaskController.update);
-router.get('/task', isAuth, TaskController.get);
+router.post('/task/:tid', isAuth, TaskController.get);
 router.delete('/task', isAuth, TaskController.delete);
 
 

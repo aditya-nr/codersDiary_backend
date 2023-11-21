@@ -39,8 +39,10 @@ class UserController {
     static async activate(req, res, next) {
         // take data
         let { uid, fullName, months, weekDays } = req.body;
+        // create profile
         let startDate = new Date();
-        let profile = new ProfileModel({ owner: uid, fullName, startDate, months, weekDays });
+        let days = Array.from({ length: months * 30 }, () => null)
+        let profile = new ProfileModel({ owner: uid, fullName, startDate, months, weekDays, days });
         // validate data
         try {
             await profile.validate();
@@ -70,7 +72,8 @@ class UserController {
         try {
             await UserModel.validate({ username, password });
         } catch (error) {
-            return next(error);
+            // return next(error); // don't send validation
+            return next(CustomError.passwordNotMatched());
         }
         // fetch user
         let user;
@@ -127,22 +130,34 @@ class UserController {
         }
     }
     static async day(req, res, next) {
-        let { did, pid } = req.body;
-        // check for pid
-        if (!pid) return next(CustomError.createError(INSUFFICENT_DATA, "INSUFFICENT_DATA", "pid is required"));
-        // if did is NULL -> create a day
-        if (!did) {
-            // create a day
+        let { day, uid } = req.body;
+        // check for day
+        day = Number(day);
+        if (isNaN(day)) return next(CustomError.createError(INSUFFICENT_DATA, "INSUFFICENT_DATA", "day is required"));
+        // take user profile using uid
+        let userProfile, days, did;
+        try {
+            userProfile = await ProfileModel.findOne({ owner: uid });
+            days = userProfile.days;
+        } catch (error) {
+            next(error);
+        }
+        // take days array, if days[day]==NULL, create new , push and update, else return day
+        if (days[day] == null) {
             try {
-                let day = await DayModel.create({});
-                did = day._id;
-                await ProfileModel.findByIdAndUpdate(pid, { $push: { days: day._id } });
+                // create a day
+                let newDay = await DayModel.create({});
+                did = newDay._id;
+                days[day] = did;
+                // update profile
+                await ProfileModel.findByIdAndUpdate(userProfile._id, { $set: { days: days } });
             } catch (error) {
                 await DayModel.findByIdAndDelete(did);
                 return next(error);
             }
         }
         // fetch form db
+        did = days[day];
         try {
             let day = await DayModel.findById(did);
             res.json({ success: true, day })

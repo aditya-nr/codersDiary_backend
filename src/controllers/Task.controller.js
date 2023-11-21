@@ -84,7 +84,7 @@ class TaskController {
         res.json({ success: true });
     }
     static async get(req, res, next) {
-        let { tid } = req.body;
+        let { tid } = req.params;
         let task;
         try {
             task = await TaskModel.findById(tid);
