@@ -17,7 +17,7 @@ router.post('/day', isAuth, UserController.day);
 
 // Task
 router.post('/task', isAuth, TaskController.create);
-router.put('/task', isAuth, TaskController.update);
+router.patch('/task', isAuth, TaskController.update);
 router.post('/task/:tid', isAuth, TaskController.get);
 router.delete('/task', isAuth, TaskController.delete);
 

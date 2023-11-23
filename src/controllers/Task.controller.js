@@ -6,13 +6,13 @@ import CustomError from "../utils/CustomError.js";
 
 class TaskController {
     static async create(req, res, next) {
-        let { pid, did, uid, target, type, title, task } = req.body;
+        let { pid, did, uid, target, type, title, task, priority, desc } = req.body;
         // check for pid and did
         if (!pid || !did) return next(CustomError.createError(INSUFFICENT_DATA, "INSUFFICENT_DATA", "pid,did is required"));
 
         // create a task, validate and save it
         let tid;
-        let taskDoc = new TaskModel({ owner: uid, target, type, title, task });
+        let taskDoc = new TaskModel({ owner: uid, target, type, title, task, priority, desc });
         try {
             taskDoc = await taskDoc.save();
             tid = taskDoc._id;
@@ -36,18 +36,18 @@ class TaskController {
         res.json({ success: true, tid });
     }
     static async update(req, res, next) {
-        let { pid, did, tid, uid, target, type, title, task, desc } = req.body;
+        let { pid, did, tid, uid, target, type, title, task, priority, desc } = req.body;
         // check for pid and did, tid
         if (!pid || !did || !tid) return next(CustomError.createError(INSUFFICENT_DATA, "INSUFFICENT_DATA", "pid,did,tid is required"));
 
         // validate data
         try {
-            await TaskModel.validate({ owner: uid, target, type, title, task, desc });
+            await TaskModel.validate({ owner: uid, target, type, title, task, priority, desc });
         } catch (error) {
             return next(error);
         }
         // create a newDoc, update oldDoc
-        let newDOc = { target, type, title, task, desc };
+        let newDOc = { target, type, title, task, priority, desc };
         let oldDoc;
         try {
             oldDoc = await TaskModel.findOneAndUpdate({ _id: tid }, { $set: newDOc });
@@ -56,7 +56,7 @@ class TaskController {
         }
 
         if (oldDoc.target == target)
-            return res.json({ success: true });
+            return res.json({ success: true, tid });
         // TODO: check if given pid and tid is correct or not
         // pull tid from array of concerned Model according to target
         try {
@@ -81,7 +81,7 @@ class TaskController {
             return next(error);
         }
         // res
-        res.json({ success: true });
+        res.json({ success: true, tid });
     }
     static async get(req, res, next) {
         let { tid } = req.params;
