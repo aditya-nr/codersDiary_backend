@@ -4,6 +4,10 @@ import isAuth from '../middlewares/isAuth.js';
 import TaskController from '../controllers/Task.controller.js';
 
 const router = express.Router();
+// test echo
+router.get('/test', (req, res) => {
+    res.json({ success: true, message: "Hello World" });
+})
 
 // user
 router.post('/register', UserController.register);
